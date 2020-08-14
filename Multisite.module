@@ -50,6 +50,7 @@ class Multisite extends WireData implements Module {
 		if(!count($this->domains)) return;
 
 		$this->it = (isset($_GET['it'])) ? ltrim($_GET['it'], '/') : '';
+		if($this->it[strlen($this->it) - 1] != '/') $this->it .= '/';
 		$this->isAdmin = false;
 		$this->isAssets = false;
 		$this->isFormBuilder = false;
@@ -97,6 +98,7 @@ class Multisite extends WireData implements Module {
 
 			// if requested url is a file we don't change
 			if($this->isFormBuilder) return;
+			
 
 			// language page names support if installed
 			// strip off the lang segment, to later prepend it again
@@ -152,13 +154,14 @@ class Multisite extends WireData implements Module {
 	 * @return string      The parsed output
 	 */
 	public function ___parseLinks($out){
+		// return $out;
 
 		if(!strlen($out)) return $out;
+		// bDump($out, 'IN');
 
 		$protocol = $this->wire('config')->https ? 'https' : 'http';
 
 		foreach($this->domains as $key => $domain){
-
 			if($this->modules->isInstalled("LanguageSupportPageNames")) {
 				foreach($this->languages as $lang) {
 					$langID = $lang->id;
@@ -166,6 +169,7 @@ class Multisite extends WireData implements Module {
 
 					$rootPage = $this->pages->get(1);
 					$rootName = $rootPage->get("name$langID");
+					// $rootName = '';
 					if($rootName == "home") {
 						$rootName = "";
 						$rootNameJson = "\\/";
@@ -174,7 +178,7 @@ class Multisite extends WireData implements Module {
 						$rootNameJson = "\\" . $rootName . "\\/";
 					}
 
-					if($key == $this->domain){
+					if($key == $this->domain || substr($key,0,strrpos($key,'.')) == substr($this->domain,0,strrpos($this->domain,'.'))){
 						// internal relative urls
 						$replace = array(
 							"\"$rootName/{$domain['root']}/",
@@ -204,7 +208,14 @@ class Multisite extends WireData implements Module {
 							"\'$protocol://{$key}$rootName/",
 							);
 						// echo (" - " . $replace . " / " . $with);
+						// bDump($key.' | '.$this->domain, "Root Name");
+
+						// bDump(substr($key,0,strrpos($key,'.')) == substr($this->domain,0,strrpos($this->domain,'.')), "X Name");
+
+						
 					}
+					// bDump($replace, 'Replace');
+					// bDump($with, 'With');
 					$out = str_replace($replace, $with, $out);
 				}
 
