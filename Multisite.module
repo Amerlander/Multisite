@@ -205,7 +205,7 @@ class Multisite extends WireData implements Module {
 							"\"$protocol://{$key}$rootName/",
 							"'$protocol://{$key}$rootName/",
 							"\"$protocol://{$key}$rootName/",
-							"\'$protocol://{$key}$rootName/",
+							"'$protocol://{$key}$rootName/",
 							);
 						// echo (" - " . $replace . " / " . $with);
 						// bDump($key.' | '.$this->domain, "Root Name");
